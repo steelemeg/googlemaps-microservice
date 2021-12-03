@@ -9,7 +9,14 @@ url = os.getenv('CLOUDAMQP_URL')
 params = pika.URLParameters(url)
 connection = pika.BlockingConnection(params)
 channel = connection.channel()
-channel.queue_declare(queue='get_map')
+channel.queue_declare(queue='get_map_m')
+
+api_key = ''
+if os.path.isfile('secrets.py'):
+    import secrets
+    api_key = secrets.MAP_KEY
+else:
+    api_key = os.environ.get('GOOGLE_CSKEY')
 
 def is_json(entry):
     '''
@@ -31,7 +38,7 @@ def call_maps_api(location):
     formatted = location.replace(", ", ",", 1).replace(", ", " ").replace(" ", "+")
 
 
-    api_key = os.getenv('API_KEY')
+    #api_key = os.getenv('API_KEY')
 
     embed_url = 'https://www.google.com/maps/embed/v1/' + 'place' + '?key=' + api_key + '&q=' + formatted
 
@@ -64,7 +71,7 @@ def on_request(ch, method, props, body):
 
 
 channel.basic_qos(prefetch_count=1)
-channel.basic_consume(queue='get_map',
+channel.basic_consume(queue='get_map_m',
                       on_message_callback=on_request,
                         )
 

@@ -14,7 +14,7 @@ def is_json(entry):
 
 send_msg = {"location": "The Louvre, Paris, France"}
 
-# call_service = "http://127.0.0.1:5000/get_map/" + str(send_msg)
+#call_service = "http://127.0.0.1:5000/get_map/" + str(send_msg)
 
 call_service = "https://map-microservice.herokuapp.com/get_map/" + str(send_msg)
 
