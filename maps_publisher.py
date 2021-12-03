@@ -35,7 +35,7 @@ class MapsRpcClient(object):
         self.corr_id = str(uuid.uuid4())
         self.channel.basic_publish(
             exchange='',
-            routing_key='get_map_m',
+            routing_key='get_map',
             properties=pika.BasicProperties(
                 reply_to=self.callback_queue,
                 correlation_id=self.corr_id,
@@ -51,11 +51,19 @@ class MapsRpcClient(object):
 
         return json.loads(self.response)
 
-if __name__ == '__main__':
-    maps_rpc = MapsRpcClient()
 
-    # Send a test message
-    message = {"location": "Grand Canyon National Park, Arizona"}
-    response = maps_rpc.call(json.dumps(message))
-    print("Printing response sent to client from server:")
-    print(json.loads(response))
+@app.route('/')
+def index():
+    return 'OK'
+
+@app.route('/get_map/<msg>')
+def get_payload(msg):
+    '''
+    Makes calls to maps client
+    '''
+    maps_rpc = MapsRpcClient()
+    response = maps_rpc.call(msg.replace("'", '"'))
+    return response
+
+if __name__ == '__main__':
+    app.run()
